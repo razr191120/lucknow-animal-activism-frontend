@@ -1,0 +1,45 @@
+@import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+@theme {
+  --color-water-50: #eff8ff;
+  --color-water-100: #dbeefe;
+  --color-water-200: #bee0fd;
+  --color-water-300: #91cffb;
+  --color-water-400: #5db5f7;
+  --color-water-500: #3897f2;
+  --color-water-600: #2279e7;
+  --color-water-700: #1a63d4;
+  --color-water-800: #1c50ac;
+  --color-water-900: #1c4587;
+  --color-water-950: #162b53;
+
+  --color-leaf-50: #f0fdf0;
+  --color-leaf-100: #dcfcdc;
+  --color-leaf-200: #bbf7bc;
+  --color-leaf-300: #86ef89;
+  --color-leaf-400: #4ade50;
+  --color-leaf-500: #22c529;
+  --color-leaf-600: #16a31d;
+  --color-leaf-700: #158019;
+  --color-leaf-800: #16651a;
+  --color-leaf-900: #145318;
+  --color-leaf-950: #052e09;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.leaflet-container {
+  z-index: 1;
+}
