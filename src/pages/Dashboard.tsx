@@ -4,8 +4,6 @@ import { getStats, getDistributions } from '../api/client';
 import type { Stats, Distribution } from '../api/types';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [recent, setRecent] = useState<Distribution[]>([]);
@@ -108,7 +106,7 @@ export default function Dashboard() {
               >
                 {dist.water_bowl_photo && (
                   <img
-                    src={`${API_URL}${dist.water_bowl_photo}`}
+                    src={dist.water_bowl_photo}
                     alt="Water bowl"
                     className="w-full h-48 object-cover"
                   />

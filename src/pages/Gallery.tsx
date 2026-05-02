@@ -3,8 +3,6 @@ import { getDistributions } from '../api/client';
 import type { Distribution } from '../api/types';
 import LoadingSpinner from '../components/LoadingSpinner';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
 export default function Gallery() {
   const [distributions, setDistributions] = useState<Distribution[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,7 +47,7 @@ export default function Gallery() {
               className="group cursor-pointer relative aspect-square rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"
             >
               <img
-                src={`${API_URL}${dist.water_bowl_photo}`}
+                src={dist.water_bowl_photo!}
                 alt={`Water bowl by ${dist.name}`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -75,7 +73,7 @@ export default function Gallery() {
           >
             <div className="relative">
               <img
-                src={`${API_URL}${selected.water_bowl_photo}`}
+                src={selected.water_bowl_photo!}
                 alt={`Water bowl by ${selected.name}`}
                 className="w-full max-h-[60vh] object-contain bg-gray-100"
               />
@@ -109,7 +107,7 @@ export default function Gallery() {
                 <div className="mt-4">
                   <p className="text-sm text-gray-500 mb-2">Volunteer Photo:</p>
                   <img
-                    src={`${API_URL}${selected.owner_photo}`}
+                    src={selected.owner_photo!}
                     alt="Volunteer"
                     className="w-32 h-32 object-cover rounded-xl border border-gray-200"
                   />
