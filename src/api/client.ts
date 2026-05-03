@@ -2,6 +2,7 @@ import axios from 'axios';
 import type {
   AdoptionApplication,
   Attachment,
+  DonationPledge,
   DonationRecord,
   DonationStats,
   Drive,
@@ -87,6 +88,24 @@ export async function login(
   password: string,
 ): Promise<TokenResponse> {
   const { data } = await api.post('/api/v1/auth/login', { email, password });
+  return data;
+}
+
+export async function oauthGoogle(id_token: string): Promise<TokenResponse> {
+  const { data } = await api.post('/api/v1/auth/oauth/google', { id_token });
+  return data;
+}
+
+export async function oauthFacebook(access_token: string): Promise<TokenResponse> {
+  const { data } = await api.post('/api/v1/auth/oauth/facebook', { access_token });
+  return data;
+}
+
+export async function oauthInstagram(body: {
+  code?: string;
+  access_token?: string;
+}): Promise<TokenResponse> {
+  const { data } = await api.post('/api/v1/auth/oauth/instagram', body);
   return data;
 }
 
@@ -471,5 +490,18 @@ export async function getDonationStats(): Promise<DonationStats> {
 
 export async function getDonationRecord(id: string): Promise<DonationRecord> {
   const { data } = await api.get(`/api/v1/donations/${id}`);
+  return data;
+}
+
+export async function listDonationPledges(campaignId: string): Promise<DonationPledge[]> {
+  const { data } = await api.get(`/api/v1/laap/donations/${campaignId}/pledges`);
+  return data;
+}
+
+export async function createDonationPledge(
+  campaignId: string,
+  body: { amount_inr?: number; message?: string },
+): Promise<DonationPledge> {
+  const { data } = await api.post(`/api/v1/laap/donations/${campaignId}/pledges`, body);
   return data;
 }

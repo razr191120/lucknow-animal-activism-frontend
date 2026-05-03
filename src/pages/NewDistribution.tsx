@@ -78,7 +78,7 @@ export default function NewDistribution() {
       if (ownerPhoto) fd.append('owner_photo', ownerPhoto);
 
       await createDistribution(fd);
-      navigate('/');
+      navigate('/water-bowl');
     } catch {
       alert('Failed to record distribution. Please try again.');
     } finally {

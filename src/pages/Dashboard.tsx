@@ -50,7 +50,7 @@ export default function Dashboard() {
               to="/donate"
               className="inline-flex items-center justify-center px-6 py-3 bg-white/15 text-white font-semibold rounded-xl border border-white/30 hover:bg-white/25 transition-all"
             >
-              Record Donation
+              Request donation
             </Link>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function Dashboard() {
           <ActionCard to="/water-bowl/distribute" icon="💧" title="Record Distribution" description="Capture a new water bowl placement" />
           <ActionCard to="/rescue/report" icon="🚨" title="Report Rescue" description="Report an animal that needs help" />
           <ActionCard to="/adopt/post" icon="🏠" title="Post for Adoption" description="List an animal for adoption" />
-          <ActionCard to="/donate" icon="💰" title="Record Donation" description="Log a monetary donation" />
+          <ActionCard to="/donate" icon="💰" title="Request a donation" description="Publish a case others can support" />
           <ActionCard to="/volunteer" icon="🙋" title="Join as Volunteer" description="Sign up and start helping" />
           <ActionCard to="/water-bowl/plan" icon="🗺️" title="Plan Route" description="Optimize your delivery route" />
         </div>
@@ -96,7 +96,7 @@ export default function Dashboard() {
           <SectionLink to="/water-bowl" icon="💧" title="Water Bowl" subtitle="Drive management & distributions" accent="from-cyan-500 to-blue-500" />
           <SectionLink to="/rescue" icon="🚨" title="Rescue" subtitle="Report & track rescue cases" accent="from-red-500 to-pink-500" />
           <SectionLink to="/adopt" icon="🏠" title="Adopt" subtitle="Find or list animals for adoption" accent="from-amber-500 to-orange-500" />
-          <SectionLink to="/donate" icon="💰" title="Donate" subtitle="Record & track donations" accent="from-green-500 to-emerald-500" />
+          <SectionLink to="/donate" icon="💰" title="Donate" subtitle="Create requests & browse campaigns" accent="from-green-500 to-emerald-500" />
           <SectionLink to="/volunteer" icon="🙋" title="Volunteer" subtitle="Sign up, log hours & compete" accent="from-purple-500 to-indigo-500" />
         </div>
       </section>

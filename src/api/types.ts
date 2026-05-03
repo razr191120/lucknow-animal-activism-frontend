@@ -253,3 +253,13 @@ export interface RescueAssignment {
   created_at: string;
   updated_at: string;
 }
+
+export interface DonationPledge {
+  id: string;
+  donation_request_id: string;
+  user_id: string;
+  supporter_full_name: string | null;
+  amount_inr: number | null;
+  message: string | null;
+  created_at: string;
+}

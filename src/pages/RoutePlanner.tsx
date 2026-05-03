@@ -85,6 +85,12 @@ export default function RoutePlanner() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <p className="text-gray-600 mb-6 max-w-3xl">
+        Enter your <strong>home address as the first line</strong>, then one address per line for
+        every stop. We geocode each line to latitude/longitude (OpenStreetMap Nominatim), then you
+        can build the <strong>shortest practical visit order</strong> from home through all stops
+        using our route optimizer.
+      </p>
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-water-900">Route Planner</h1>
         <p className="text-gray-500 mt-1">

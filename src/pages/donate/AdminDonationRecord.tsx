@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { recordDonation, listLaapDonations } from '../../api/client';
 import type { LaapDonation } from '../../api/types';
+import { useAuth } from '../../context/AuthContext';
 
-export default function DonateForm() {
+/** Admin / treasurer: log an offline receipt against a campaign (optional). */
+export default function AdminDonationRecord() {
+  const { isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -21,8 +24,14 @@ export default function DonateForm() {
   });
 
   useEffect(() => {
-    listLaapDonations('open').then(setCampaigns).catch(() => {});
-  }, []);
+    if (isAdmin) {
+      listLaapDonations('open').then(setCampaigns).catch(() => {});
+    }
+  }, [isAdmin]);
+
+  if (!isAdmin) {
+    return <Navigate to="/donate" replace />;
+  }
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -47,7 +56,7 @@ export default function DonateForm() {
         date: form.date,
         notes: form.notes || undefined,
       });
-      setSuccess(`Donation recorded! Receipt: ${result.receipt_number}`);
+      setSuccess(`Recorded. Receipt: ${result.receipt_number}`);
       setForm({
         donor_name: '',
         donor_email: '',
@@ -59,8 +68,9 @@ export default function DonateForm() {
         date: new Date().toISOString().split('T')[0],
         notes: '',
       });
-    } catch {
-      setError('Failed to record donation.');
+    } catch (err: unknown) {
+      const ax = err as { response?: { data?: { detail?: string } } };
+      setError(ax.response?.data?.detail ?? 'Failed to record donation.');
     } finally {
       setLoading(false);
     }
@@ -70,30 +80,19 @@ export default function DonateForm() {
     <div className="max-w-2xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Record a Donation</h1>
-          <p className="text-gray-500 mt-1">Log monetary donations for record-keeping</p>
+          <h1 className="text-3xl font-bold text-gray-900">Record donation (admin)</h1>
+          <p className="text-gray-500 mt-1">
+            For treasurer use: log a received amount and receipt number. Public donors use
+            donation requests and pledges instead.
+          </p>
         </div>
-        <div className="flex gap-2">
-          <Link
-            to="/donate/history"
-            className="text-sm text-green-600 hover:text-green-800 font-medium"
-          >
-            History
-          </Link>
-          <span className="text-gray-300">|</span>
-          <Link
-            to="/donate/campaigns"
-            className="text-sm text-green-600 hover:text-green-800 font-medium"
-          >
-            Campaigns
-          </Link>
-        </div>
+        <Link to="/donate" className="text-sm text-green-600 font-medium">
+          &larr; Donate home
+        </Link>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-6">
-          {error}
-        </div>
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3 mb-6">{error}</div>
       )}
       {success && (
         <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg p-3 mb-6">
@@ -104,13 +103,13 @@ export default function DonateForm() {
       <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Donor Name *</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Donor name *</label>
             <input
               name="donor_name"
               value={form.donor_name}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm"
             />
           </div>
           <div>
@@ -123,109 +122,56 @@ export default function DonateForm() {
               value={form.amount_inr}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="w-full rounded-lg border-gray-300 shadow-sm"
             />
           </div>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              name="donor_email"
-              type="email"
-              value={form.donor_email}
-              onChange={handleChange}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            />
+            <input name="donor_email" type="email" value={form.donor_email} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-            <input
-              name="donor_phone"
-              value={form.donor_phone}
-              onChange={handleChange}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            />
+            <input name="donor_phone" value={form.donor_phone} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm" />
           </div>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Payment Mode</label>
-            <select
-              name="payment_mode"
-              value={form.payment_mode}
-              onChange={handleChange}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            >
+            <label className="block text-sm font-medium text-gray-700 mb-1">Payment mode</label>
+            <select name="payment_mode" value={form.payment_mode} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm">
               <option value="cash">Cash</option>
               <option value="upi">UPI</option>
-              <option value="bank">Bank Transfer</option>
+              <option value="bank">Bank</option>
               <option value="other">Other</option>
             </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-            <input
-              name="date"
-              type="date"
-              value={form.date}
-              onChange={handleChange}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            />
+            <input name="date" type="date" value={form.date} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm" />
           </div>
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
-          <input
-            name="purpose"
-            value={form.purpose}
-            onChange={handleChange}
-            placeholder="e.g. Water bowls, Medicine, Food"
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-          />
+          <input name="purpose" value={form.purpose} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm" />
         </div>
-
         {campaigns.length > 0 && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Link to Campaign (optional)
-            </label>
-            <select
-              name="campaign_id"
-              value={form.campaign_id}
-              onChange={handleChange}
-              className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-            >
-              <option value="">No campaign</option>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Link to campaign (optional)</label>
+            <select name="campaign_id" value={form.campaign_id} onChange={handleChange} className="w-full rounded-lg border-gray-300 shadow-sm">
+              <option value="">None</option>
               {campaigns.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title}
-                </option>
+                <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
           </div>
         )}
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-          <textarea
-            name="notes"
-            value={form.notes}
-            onChange={handleChange}
-            rows={2}
-            className="w-full rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-          />
+          <textarea name="notes" value={form.notes} onChange={handleChange} rows={2} className="w-full rounded-lg border-gray-300 shadow-sm" />
         </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 disabled:opacity-50 transition-colors shadow-md"
-        >
-          {loading ? 'Recording...' : 'Record Donation'}
+        <button type="submit" disabled={loading} className="w-full py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-900 disabled:opacity-50">
+          {loading ? 'Saving…' : 'Save receipt record'}
         </button>
       </form>
     </div>

@@ -29,7 +29,7 @@ export default function Campaigns() {
           to="/donate"
           className="text-green-600 hover:text-green-800 text-sm font-medium"
         >
-          &larr; Record a Donation
+          &larr; Request a donation
         </Link>
       </div>
 
@@ -56,9 +56,10 @@ export default function Campaigns() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {campaigns.map((c) => (
-            <div
+            <Link
               key={c.id}
-              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow overflow-hidden"
+              to={`/donate/campaigns/${c.id}`}
+              className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-green-300 transition-all overflow-hidden block text-left"
             >
               {c.photo_urls[0] && (
                 <img
@@ -91,7 +92,7 @@ export default function Campaigns() {
                   </p>
                 )}
                 {c.how_to_donate && (
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-xs text-gray-400 mt-2 line-clamp-2">
                     {c.how_to_donate}
                   </p>
                 )}
@@ -99,8 +100,11 @@ export default function Campaigns() {
                   By {c.creator_full_name ?? 'Unknown'} &middot;{' '}
                   {new Date(c.created_at).toLocaleDateString('en-IN')}
                 </p>
+                <span className="mt-3 inline-block text-sm font-semibold text-green-600">
+                  View & pledge &rarr;
+                </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

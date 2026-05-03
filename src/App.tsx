@@ -6,8 +6,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Admin from './pages/Admin';
 import LoadingSpinner from './components/LoadingSpinner';
+import InstagramCallback from './pages/oauth/InstagramCallback';
 
 // Water Bowl
+import WaterBowlHub from './pages/water-bowl/WaterBowlHub';
 import Drives from './pages/Drives';
 import DriveDetail from './pages/DriveDetail';
 import NewDistribution from './pages/NewDistribution';
@@ -26,9 +28,11 @@ import AdoptDetail from './pages/adopt/AdoptDetail';
 import MyApplications from './pages/adopt/MyApplications';
 
 // Donate
-import DonateForm from './pages/donate/DonateForm';
+import RequestDonation from './pages/donate/RequestDonation';
+import AdminDonationRecord from './pages/donate/AdminDonationRecord';
 import DonationHistory from './pages/donate/DonationHistory';
 import Campaigns from './pages/donate/Campaigns';
+import CampaignDetail from './pages/donate/CampaignDetail';
 
 // Volunteer
 import VolunteerSignup from './pages/volunteer/VolunteerSignup';
@@ -55,6 +59,7 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/oauth/instagram" element={<InstagramCallback />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
@@ -62,7 +67,8 @@ export default function App() {
             <Route path="/admin" element={<Admin />} />
 
             {/* Water Bowl */}
-            <Route path="/water-bowl" element={<Drives />} />
+            <Route path="/water-bowl" element={<WaterBowlHub />} />
+            <Route path="/water-bowl/drives" element={<Drives />} />
             <Route path="/water-bowl/drives/:id" element={<DriveDetail />} />
             <Route path="/water-bowl/distribute" element={<NewDistribution />} />
             <Route path="/water-bowl/plan" element={<RoutePlanner />} />
@@ -80,9 +86,11 @@ export default function App() {
             <Route path="/adopt/:id" element={<AdoptDetail />} />
 
             {/* Donate */}
-            <Route path="/donate" element={<DonateForm />} />
+            <Route path="/donate" element={<RequestDonation />} />
+            <Route path="/donate/record" element={<AdminDonationRecord />} />
             <Route path="/donate/history" element={<DonationHistory />} />
             <Route path="/donate/campaigns" element={<Campaigns />} />
+            <Route path="/donate/campaigns/:id" element={<CampaignDetail />} />
 
             {/* Volunteer */}
             <Route path="/volunteer" element={<VolunteerSignup />} />

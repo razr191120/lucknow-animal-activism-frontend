@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signup, signupLaap } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import SocialLoginButtons from '../components/SocialLoginButtons';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -77,20 +78,39 @@ export default function Signup() {
             Join the platform
           </h1>
           <p className="text-gray-500 mt-2">
-            One account for water bowl drives and L.A.A.P (adoptions, rescues,
-            donations). Optional Aadhaar &amp; PAN for L.A.A.P identity.
+            One account for water bowl drives and L.A.A.P. Use social sign-in or email below.
+            Optional Aadhaar &amp; PAN for L.A.A.P identity when registering with password.
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="bg-white rounded-2xl border border-water-200 shadow-xl p-8 space-y-5"
-        >
+        <div className="bg-white rounded-2xl border border-water-200 shadow-xl p-8 space-y-5">
           {error && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-700 text-sm">
               {error}
             </div>
           )}
+
+          <SocialLoginButtons
+            onSuccess={(data) => {
+              setAuth(data.access_token, data.user);
+              navigate('/');
+            }}
+            onError={(m) => setError(m)}
+          />
+
+          <div className="relative py-2">
+            <div className="absolute inset-0 flex items-center" aria-hidden>
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-400">Email signup</span>
+            </div>
+          </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-5"
+        >
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -214,6 +234,7 @@ export default function Signup() {
             </Link>
           </p>
         </form>
+        </div>
       </div>
     </div>
   );

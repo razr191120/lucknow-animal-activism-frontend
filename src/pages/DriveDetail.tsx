@@ -60,7 +60,7 @@ export default function DriveDetail() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link
-        to="/water-bowl"
+        to="/water-bowl/drives"
         className="text-water-600 hover:text-water-800 text-sm font-medium mb-6 inline-flex items-center gap-1"
       >
         ← Back to Drives
