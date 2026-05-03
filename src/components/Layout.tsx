@@ -10,7 +10,8 @@ export default function Layout() {
       </main>
       <footer className="bg-water-900 text-white/60 text-center py-6 text-sm">
         <p>
-          Lucknow Water Bowl Drive &mdash; Providing water for street animals
+          Lucknow Water Bowl Drive &amp; L.A.A.P (Lucknow Animal Activism
+          Project) &mdash; one account, water bowls and animal support
         </p>
         <p className="mt-1">Made with 💧 and ❤️ in Lucknow, India</p>
       </footer>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { signup } from '../api/client';
+import { signup, signupLaap } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
 export default function Signup() {
@@ -11,6 +11,8 @@ export default function Signup() {
     email: '',
     password: '',
     confirmPassword: '',
+    aadhaar_number: '',
+    pan_number: '',
   });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -22,30 +24,61 @@ export default function Signup() {
       setError('Passwords do not match.');
       return;
     }
+    const aadhaar = form.aadhaar_number.replace(/\s/g, '');
+    const pan = form.pan_number.replace(/\s/g, '').toUpperCase();
+    const hasKyc = aadhaar.length > 0 || pan.length > 0;
+    if (hasKyc) {
+      if (aadhaar.length !== 12 || !/^\d{12}$/.test(aadhaar)) {
+        setError('For L.A.A.P KYC, enter exactly 12 digits for Aadhaar (or leave both blank).');
+        return;
+      }
+      if (pan.length !== 10 || !/^[A-Z]{5}\d{4}[A-Z]$/.test(pan)) {
+        setError('For L.A.A.P KYC, enter a valid PAN (e.g. ABCDE1234F) or leave both blank.');
+        return;
+      }
+    }
+
     setSubmitting(true);
     try {
-      const res = await signup(form.email, form.full_name, form.password);
+      const res = hasKyc
+        ? await signupLaap(
+            form.email,
+            form.full_name,
+            form.password,
+            aadhaar,
+            pan,
+          )
+        : await signup(form.email, form.full_name, form.password);
       setAuth(res.access_token, res.user);
       navigate('/');
-    } catch (err: any) {
-      setError(
-        err.response?.data?.detail || 'Signup failed. Please try again.',
-      );
+    } catch (err: unknown) {
+      const ax = err as {
+        response?: { data?: { detail?: string | { msg: string }[] } };
+      };
+      const d = ax.response?.data?.detail;
+      if (Array.isArray(d)) {
+        setError(d.map((x) => x.msg).join(' '));
+      } else if (typeof d === 'string') {
+        setError(d);
+      } else {
+        setError('Signup failed. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-water-50 via-white to-leaf-50 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-water-50 via-white to-leaf-50 px-4 py-10">
+      <div className="w-full max-w-lg">
         <div className="text-center mb-8">
           <span className="text-5xl block mb-3">💧</span>
           <h1 className="text-3xl font-extrabold text-water-900">
-            Join the Drive
+            Join the platform
           </h1>
           <p className="text-gray-500 mt-2">
-            Create your account to start helping animals
+            One account for water bowl drives and L.A.A.P (adoptions, rescues,
+            donations). Optional Aadhaar &amp; PAN for L.A.A.P identity.
           </p>
         </div>
 
@@ -85,6 +118,51 @@ export default function Signup() {
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-water-400 focus:border-water-400 outline-none transition-shadow"
               placeholder="you@example.com"
             />
+          </div>
+
+          <div className="border-t border-water-100 pt-4 space-y-4">
+            <p className="text-sm font-semibold text-water-900">
+              L.A.A.P — optional Aadhaar &amp; PAN
+            </p>
+            <p className="text-xs text-gray-500">
+              Leave both empty for a standard account. If you fill either, both
+              must be valid; we use the L.A.A.P signup endpoint and store KYC on
+              your user record.
+            </p>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Aadhaar (12 digits, optional)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={14}
+                value={form.aadhaar_number}
+                onChange={(e) =>
+                  setForm({ ...form, aadhaar_number: e.target.value })
+                }
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg font-mono focus:ring-2 focus:ring-water-400 outline-none"
+                placeholder="Leave blank if not needed"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                PAN (optional)
+              </label>
+              <input
+                type="text"
+                maxLength={10}
+                value={form.pan_number}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    pan_number: e.target.value.toUpperCase(),
+                  })
+                }
+                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg font-mono focus:ring-2 focus:ring-water-400 outline-none"
+                placeholder="ABCDE1234F"
+              />
+            </div>
           </div>
 
           <div>

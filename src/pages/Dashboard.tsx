@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getStats, getDistributions } from '../api/client';
 import type { Stats, Distribution } from '../api/types';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { LA } from './laap/paths';
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -49,6 +50,30 @@ export default function Dashboard() {
               className="inline-flex items-center justify-center px-8 py-3 bg-white/15 text-white font-semibold rounded-xl border border-white/30 hover:bg-white/25 transition-all duration-200"
             >
               View Drives
+            </Link>
+          </div>
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-2 text-sm text-white/90">
+            <span className="font-semibold text-white/80">L.A.A.P</span>
+            <span className="text-white/50" aria-hidden>
+              |
+            </span>
+            <Link
+              to={LA.adoptions}
+              className="rounded-lg px-3 py-1.5 font-medium hover:bg-white/15 hover:underline"
+            >
+              Adoptions
+            </Link>
+            <Link
+              to={LA.rescues}
+              className="rounded-lg px-3 py-1.5 font-medium hover:bg-white/15 hover:underline"
+            >
+              Rescues
+            </Link>
+            <Link
+              to={LA.donations}
+              className="rounded-lg px-3 py-1.5 font-medium hover:bg-white/15 hover:underline"
+            >
+              Donations
             </Link>
           </div>
         </div>

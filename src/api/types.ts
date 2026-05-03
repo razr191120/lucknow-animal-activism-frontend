@@ -102,3 +102,53 @@ export interface Attachment {
   uploaded_by: string | null;
   created_at: string;
 }
+
+/** L.A.A.P — Lucknow Animal Activism (same backend `/api/v1/laap`) */
+export interface LaapAdoption {
+  id: string;
+  user_id: string;
+  creator_full_name: string | null;
+  title: string;
+  animal_name: string | null;
+  description: string | null;
+  contact_phone: string | null;
+  location_hint: string | null;
+  status: string;
+  photo_urls: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LaapRescue {
+  id: string;
+  user_id: string;
+  creator_full_name: string | null;
+  title: string;
+  description: string | null;
+  location_address: string;
+  contact_phone: string | null;
+  animal_condition: string | null;
+  urgency: string;
+  status: string;
+  photo_urls: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LaapDonation {
+  id: string;
+  user_id: string;
+  creator_full_name: string | null;
+  title: string;
+  description: string | null;
+  items_or_need_summary: string | null;
+  how_to_donate: string | null;
+  contact_phone: string | null;
+  upi_id: string | null;
+  bank_account_hint: string | null;
+  target_amount_inr: string | null;
+  status: string;
+  photo_urls: string[];
+  created_at: string;
+  updated_at: string;
+}

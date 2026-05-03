@@ -37,7 +37,7 @@ export default function Login() {
             Welcome Back
           </h1>
           <p className="text-gray-500 mt-2">
-            Sign in to Lucknow Water Bowl Drive
+            Sign in to water bowl drives and L.A.A.P — same account
           </p>
         </div>
 

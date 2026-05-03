@@ -25,6 +25,23 @@
   --color-leaf-800: #16651a;
   --color-leaf-900: #145318;
   --color-leaf-950: #052e09;
+
+  /* L.A.A.P (Lucknow Animal Activism) accent — used alongside water/leaf */
+  --color-laap-50: #fff7ed;
+  --color-laap-100: #ffedd5;
+  --color-laap-200: #fed7aa;
+  --color-laap-300: #fdba74;
+  --color-laap-400: #fb923c;
+  --color-laap-500: #f97316;
+  --color-laap-600: #ea580c;
+  --color-laap-700: #c2410c;
+  --color-laap-800: #9a3412;
+  --color-laap-900: #7c2d12;
+  --color-laap-950: #431407;
+
+  --color-earth-700: #44403c;
+  --color-earth-800: #292524;
+  --color-earth-900: #1c1917;
 }
 
 body {

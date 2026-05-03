@@ -5,6 +5,9 @@ import type {
   Distribution,
   GeocodedAddress,
   GeocodeResponse,
+  LaapAdoption,
+  LaapDonation,
+  LaapRescue,
   OptimizedRoute,
   RoutePoint,
   Stats,
@@ -49,6 +52,25 @@ export async function signup(
     email,
     full_name,
     password,
+  });
+  return data;
+}
+
+/** L.A.A.P signup — stores Aadhaar + PAN on the same `users` row. */
+export async function signupLaap(
+  email: string,
+  full_name: string,
+  password: string,
+  aadhaar_number: string,
+  pan_number: string,
+): Promise<TokenResponse> {
+  const aadhaar = aadhaar_number.replace(/\s/g, '');
+  const { data } = await api.post('/api/v1/auth/signup-laap', {
+    email,
+    full_name,
+    password,
+    aadhaar_number: aadhaar,
+    pan_number: pan_number.replace(/\s/g, '').toUpperCase(),
   });
   return data;
 }
@@ -201,5 +223,76 @@ export async function adminDeleteAttachment(attachmentId: string): Promise<void>
 
 export async function healthCheck(): Promise<{ status: string }> {
   const { data } = await api.get('/health');
+  return data;
+}
+
+// ── L.A.A.P (Lucknow Animal Activism) ─────────────────────────────
+
+export async function listLaapAdoptions(
+  status_filter?: string,
+): Promise<LaapAdoption[]> {
+  const { data } = await api.get('/api/v1/laap/adoptions', {
+    params: status_filter ? { status_filter } : {},
+  });
+  return data;
+}
+
+export async function getLaapAdoption(id: string): Promise<LaapAdoption> {
+  const { data } = await api.get(`/api/v1/laap/adoptions/${id}`);
+  return data;
+}
+
+export async function createLaapAdoption(
+  formData: FormData,
+): Promise<LaapAdoption> {
+  const { data } = await api.post('/api/v1/laap/adoptions', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+}
+
+export async function listLaapRescues(
+  status_filter?: string,
+): Promise<LaapRescue[]> {
+  const { data } = await api.get('/api/v1/laap/rescues', {
+    params: status_filter ? { status_filter } : {},
+  });
+  return data;
+}
+
+export async function getLaapRescue(id: string): Promise<LaapRescue> {
+  const { data } = await api.get(`/api/v1/laap/rescues/${id}`);
+  return data;
+}
+
+export async function createLaapRescue(
+  formData: FormData,
+): Promise<LaapRescue> {
+  const { data } = await api.post('/api/v1/laap/rescues', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+}
+
+export async function listLaapDonations(
+  status_filter?: string,
+): Promise<LaapDonation[]> {
+  const { data } = await api.get('/api/v1/laap/donations', {
+    params: status_filter ? { status_filter } : {},
+  });
+  return data;
+}
+
+export async function getLaapDonation(id: string): Promise<LaapDonation> {
+  const { data } = await api.get(`/api/v1/laap/donations/${id}`);
+  return data;
+}
+
+export async function createLaapDonation(
+  formData: FormData,
+): Promise<LaapDonation> {
+  const { data } = await api.post('/api/v1/laap/donations', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return data;
 }
