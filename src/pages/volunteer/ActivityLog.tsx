@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { getMyActivities, logVolunteerActivity } from '../../api/client';
 import type { VolunteerActivity } from '../../api/types';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useAuth } from '../../context/AuthContext';
 
 export default function ActivityLog() {
+  const { user } = useAuth();
+  const location = useLocation();
   const [activities, setActivities] = useState<VolunteerActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -29,8 +32,14 @@ export default function ActivityLog() {
   }
 
   useEffect(() => {
+    if (!user) {
+      setActivities([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     load();
-  }, []);
+  }, [user]);
 
   async function handleLog(e: React.FormEvent) {
     e.preventDefault();
@@ -65,6 +74,42 @@ export default function ActivityLog() {
   };
 
   if (loading) return <LoadingSpinner message="Loading activity log..." />;
+
+  const returnTo = encodeURIComponent(
+    `${location.pathname}${location.search}`,
+  );
+
+  if (!user) {
+    return (
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 text-center">
+        <h1 className="text-3xl font-bold text-gray-900">Activity Log</h1>
+        <p className="mt-3 text-gray-600">
+          Sign in to view and log your volunteer hours.
+        </p>
+        <p className="mt-4 text-sm">
+          <Link
+            to={`/login?returnUrl=${returnTo}`}
+            className="font-semibold text-purple-600 hover:text-purple-800"
+          >
+            Log in
+          </Link>
+          {' · '}
+          <Link
+            to={`/signup?returnUrl=${returnTo}`}
+            className="font-semibold text-purple-600 hover:text-purple-800"
+          >
+            Sign up
+          </Link>
+        </p>
+        <Link
+          to="/volunteer"
+          className="mt-8 inline-block text-purple-600 hover:text-purple-800 text-sm font-medium"
+        >
+          &larr; Volunteer hub
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

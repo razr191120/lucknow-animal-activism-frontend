@@ -41,9 +41,18 @@ api.interceptors.response.use(
     if (err.response?.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (!window.location.pathname.startsWith('/login')) {
-        window.location.href = '/login';
+      const p = window.location.pathname;
+      if (
+        p.startsWith('/login') ||
+        p.startsWith('/signup') ||
+        p.startsWith('/oauth')
+      ) {
+        return Promise.reject(err);
       }
+      const returnUrl = encodeURIComponent(
+        window.location.pathname + window.location.search,
+      );
+      window.location.href = `/login?returnUrl=${returnUrl}`;
     }
     return Promise.reject(err);
   },

@@ -1,12 +1,26 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { login } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import SocialLoginButtons from '../components/SocialLoginButtons';
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { setAuth } = useAuth();
+  const returnUrl = searchParams.get('returnUrl');
+  const afterAuthPath =
+    returnUrl &&
+    returnUrl.startsWith('/') &&
+    !returnUrl.startsWith('//')
+      ? returnUrl
+      : '/';
+  const signupHref =
+    returnUrl &&
+    returnUrl.startsWith('/') &&
+    !returnUrl.startsWith('//')
+      ? `/signup?returnUrl=${encodeURIComponent(returnUrl)}`
+      : '/signup';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,7 +33,7 @@ export default function Login() {
     try {
       const res = await login(email, password);
       setAuth(res.access_token, res.user);
-      navigate('/');
+      navigate(afterAuthPath, { replace: true });
     } catch (err: any) {
       setError(
         err.response?.data?.detail || 'Login failed. Please try again.',
@@ -52,7 +66,7 @@ export default function Login() {
           <SocialLoginButtons
             onSuccess={(data) => {
               setAuth(data.access_token, data.user);
-              navigate('/');
+              navigate(afterAuthPath, { replace: true });
             }}
             onError={(m) => setError(m)}
           />
@@ -110,7 +124,7 @@ export default function Login() {
           <p className="text-center text-sm text-gray-500">
             Don't have an account?{' '}
             <Link
-              to="/signup"
+              to={signupHref}
               className="text-water-600 hover:text-water-800 font-medium"
             >
               Sign up

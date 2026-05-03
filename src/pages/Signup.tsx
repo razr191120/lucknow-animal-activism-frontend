@@ -1,12 +1,26 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { signup, signupLaap } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import SocialLoginButtons from '../components/SocialLoginButtons';
 
 export default function Signup() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { setAuth } = useAuth();
+  const returnUrl = searchParams.get('returnUrl');
+  const afterAuthPath =
+    returnUrl &&
+    returnUrl.startsWith('/') &&
+    !returnUrl.startsWith('//')
+      ? returnUrl
+      : '/';
+  const loginHref =
+    returnUrl &&
+    returnUrl.startsWith('/') &&
+    !returnUrl.startsWith('//')
+      ? `/login?returnUrl=${encodeURIComponent(returnUrl)}`
+      : '/login';
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -51,7 +65,7 @@ export default function Signup() {
           )
         : await signup(form.email, form.full_name, form.password);
       setAuth(res.access_token, res.user);
-      navigate('/');
+      navigate(afterAuthPath, { replace: true });
     } catch (err: unknown) {
       const ax = err as {
         response?: { data?: { detail?: string | { msg: string }[] } };
@@ -93,7 +107,7 @@ export default function Signup() {
           <SocialLoginButtons
             onSuccess={(data) => {
               setAuth(data.access_token, data.user);
-              navigate('/');
+              navigate(afterAuthPath, { replace: true });
             }}
             onError={(m) => setError(m)}
           />
@@ -227,7 +241,7 @@ export default function Signup() {
           <p className="text-center text-sm text-gray-500">
             Already have an account?{' '}
             <Link
-              to="/login"
+              to={loginHref}
               className="text-water-600 hover:text-water-800 font-medium"
             >
               Sign in

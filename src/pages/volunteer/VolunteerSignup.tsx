@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   volunteerSignup,
   getVolunteerProfile,
@@ -7,8 +7,11 @@ import {
 } from '../../api/client';
 import type { Volunteer } from '../../api/types';
 import LoadingSpinner from '../../components/LoadingSpinner';
+import { useAuth } from '../../context/AuthContext';
 
 export default function VolunteerSignup() {
+  const { user } = useAuth();
+  const location = useLocation();
   const [profile, setProfile] = useState<Volunteer | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -22,6 +25,12 @@ export default function VolunteerSignup() {
   });
 
   useEffect(() => {
+    if (!user) {
+      setProfile(null);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
     getVolunteerProfile()
       .then((v) => {
         setProfile(v);
@@ -34,7 +43,7 @@ export default function VolunteerSignup() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -73,8 +82,26 @@ export default function VolunteerSignup() {
 
   if (loading) return <LoadingSpinner message="Loading..." />;
 
+  const returnTo = encodeURIComponent(
+    `${location.pathname}${location.search}`,
+  );
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-10">
+      {!user && (
+        <div className="mb-6 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm text-purple-900">
+          <p className="font-medium">Sign in to create or manage your volunteer profile</p>
+          <p className="mt-1 text-purple-800/90">
+            <Link to={`/login?returnUrl=${returnTo}`} className="font-semibold underline hover:no-underline">
+              Log in
+            </Link>
+            {' · '}
+            <Link to={`/signup?returnUrl=${returnTo}`} className="font-semibold underline hover:no-underline">
+              Sign up
+            </Link>
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
@@ -132,7 +159,11 @@ export default function VolunteerSignup() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6 bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 bg-white rounded-xl border border-gray-200 shadow-sm p-6"
+        aria-disabled={!user}
+      >
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
           <input
@@ -180,7 +211,7 @@ export default function VolunteerSignup() {
 
         <button
           type="submit"
-          disabled={saving}
+          disabled={saving || !user}
           className="w-full py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 disabled:opacity-50 transition-colors shadow-md"
         >
           {saving ? 'Saving...' : profile ? 'Update Profile' : 'Sign Up as Volunteer'}

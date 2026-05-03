@@ -1,4 +1,12 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  Link,
+  useSearchParams,
+  useLocation,
+} from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -40,17 +48,43 @@ import MyAssignments from './pages/volunteer/MyAssignments';
 import ActivityLog from './pages/volunteer/ActivityLog';
 import Leaderboard from './pages/volunteer/Leaderboard';
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function GuestRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const [searchParams] = useSearchParams();
   if (loading) return <LoadingSpinner message="Loading..." />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (user) {
+    const raw = searchParams.get('returnUrl');
+    const to =
+      raw && raw.startsWith('/') && !raw.startsWith('//') ? raw : '/';
+    return <Navigate to={to} replace />;
+  }
   return <>{children}</>;
 }
 
-function GuestRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { user, loading, isAdmin } = useAuth();
+  const location = useLocation();
   if (loading) return <LoadingSpinner message="Loading..." />;
-  if (user) return <Navigate to="/" replace />;
+  if (!user) {
+    const ret = encodeURIComponent(
+      `${location.pathname}${location.search}`,
+    );
+    return <Navigate to={`/login?returnUrl=${ret}`} replace />;
+  }
+  if (!isAdmin) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center">
+        <h1 className="text-xl font-bold text-gray-900">Access denied</h1>
+        <p className="text-red-600 font-semibold mt-2">This area is for administrators only.</p>
+        <Link
+          to="/"
+          className="mt-6 inline-block text-emerald-700 font-medium hover:underline"
+        >
+          Return to home
+        </Link>
+      </div>
+    );
+  }
   return <>{children}</>;
 }
 
@@ -62,9 +96,16 @@ export default function App() {
           <Route path="/oauth/instagram" element={<InstagramCallback />} />
           <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
           <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
-          <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+          <Route element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route
+              path="/admin"
+              element={
+                <AdminRoute>
+                  <Admin />
+                </AdminRoute>
+              }
+            />
 
             {/* Water Bowl */}
             <Route path="/water-bowl" element={<WaterBowlHub />} />

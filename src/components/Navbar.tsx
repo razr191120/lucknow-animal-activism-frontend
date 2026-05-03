@@ -30,8 +30,12 @@ export default function Navbar() {
 
   function handleLogout() {
     logout();
-    navigate('/login');
+    navigate('/');
   }
+
+  const returnTo = encodeURIComponent(
+    `${location.pathname}${location.search}`,
+  );
 
   return (
     <nav className="bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 shadow-lg sticky top-0 z-50">
@@ -70,7 +74,7 @@ export default function Navbar() {
               );
             })}
 
-            {user && (
+            {user ? (
               <div className="flex items-center gap-3 ml-2 pl-3 border-l border-white/20 shrink-0">
                 <span className="text-white/70 text-sm hidden lg:inline max-w-[8rem] truncate">
                   {user.full_name}
@@ -81,6 +85,21 @@ export default function Navbar() {
                 >
                   Logout
                 </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 ml-2 pl-3 border-l border-white/20 shrink-0">
+                <Link
+                  to={`/login?returnUrl=${returnTo}`}
+                  className="px-3 py-1.5 text-white/90 text-sm font-medium rounded-lg hover:bg-white/10 transition-colors"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to={`/signup?returnUrl=${returnTo}`}
+                  className="px-3 py-1.5 bg-white/15 text-white text-sm font-semibold rounded-lg hover:bg-white/25 transition-colors"
+                >
+                  Sign up
+                </Link>
               </div>
             )}
           </div>
@@ -136,7 +155,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            {user && (
+            {user ? (
               <div className="pt-2 mt-2 border-t border-white/10">
                 <p className="text-white/60 text-sm px-3 py-1">
                   {user.full_name} ({user.role})
@@ -150,6 +169,23 @@ export default function Navbar() {
                 >
                   Logout
                 </button>
+              </div>
+            ) : (
+              <div className="pt-2 mt-2 border-t border-white/10 flex flex-col gap-1 px-1">
+                <Link
+                  to={`/login?returnUrl=${returnTo}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-medium text-white/90 hover:bg-white/10"
+                >
+                  Log in
+                </Link>
+                <Link
+                  to={`/signup?returnUrl=${returnTo}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block px-3 py-2 rounded-lg text-sm font-semibold text-white bg-white/10 hover:bg-white/20"
+                >
+                  Sign up
+                </Link>
               </div>
             )}
           </div>
