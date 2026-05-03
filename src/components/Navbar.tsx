@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LA } from '../pages/laap/paths';
 
 function pathActive(pathname: string, to: string) {
   if (to === '/') return pathname === '/';
   return pathname === to || pathname.startsWith(`${to}/`);
+}
+
+interface NavSection {
+  to: string;
+  label: string;
 }
 
 export default function Navbar() {
@@ -14,19 +18,14 @@ export default function Navbar() {
   const { user, isAdmin, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const waterLinks = [
+  const topLinks: NavSection[] = [
     { to: '/', label: 'Dashboard' },
-    { to: '/drives', label: 'Drives' },
-    { to: '/distribute', label: 'New Distribution' },
-    { to: '/plan', label: 'Route Planner' },
-    { to: '/gallery', label: 'Gallery' },
+    { to: '/water-bowl', label: 'Water Bowl' },
+    { to: '/rescue', label: 'Rescue' },
+    { to: '/adopt', label: 'Adopt' },
+    { to: '/donate', label: 'Donate' },
+    { to: '/volunteer', label: 'Volunteer' },
     ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
-  ];
-
-  const laapLinks = [
-    { to: LA.adoptions, label: 'Adoptions' },
-    { to: LA.rescues, label: 'Rescues' },
-    { to: LA.donations, label: 'Donations' },
   ];
 
   function handleLogout() {
@@ -35,26 +34,26 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gradient-to-r from-water-700 via-water-600 to-leaf-600 shadow-lg sticky top-0 z-50">
+    <nav className="bg-gradient-to-r from-emerald-700 via-teal-600 to-cyan-600 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center gap-3 group shrink-0">
             <span className="text-3xl drop-shadow-md" aria-hidden>
-              💧
+              🐾
             </span>
             <span className="text-white font-bold text-lg tracking-tight hidden sm:inline leading-tight">
-              Lucknow Water Bowl
+              Lucknow Animal
               <span className="block text-xs font-semibold text-white/80">
-                &amp; L.A.A.P
+                Activism Project
               </span>
             </span>
             <span className="text-white font-bold text-lg tracking-tight sm:hidden">
-              LWBP
+              LAAP
             </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1 flex-wrap justify-end max-w-[calc(100%-11rem)]">
-            {waterLinks.map((link) => {
+          <div className="hidden md:flex items-center gap-1 flex-wrap justify-end max-w-[calc(100%-13rem)]">
+            {topLinks.map((link) => {
               const active = pathActive(location.pathname, link.to);
               return (
                 <Link
@@ -64,29 +63,6 @@ export default function Navbar() {
                     active
                       ? 'bg-white/20 text-white shadow-inner'
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            <span
-              className="mx-1 h-6 w-px bg-white/25 shrink-0"
-              aria-hidden
-            />
-            <span className="text-white/60 text-xs font-semibold uppercase tracking-wide px-1 shrink-0">
-              L.A.A.P
-            </span>
-            {laapLinks.map((link) => {
-              const active = pathActive(location.pathname, link.to);
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`px-2.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    active
-                      ? 'bg-orange-400/30 text-white shadow-inner ring-1 ring-white/20'
-                      : 'text-white/85 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {link.label}
@@ -141,12 +117,9 @@ export default function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden bg-water-800/95 backdrop-blur-sm border-t border-white/10 max-h-[85vh] overflow-y-auto">
+        <div className="md:hidden bg-emerald-800/95 backdrop-blur-sm border-t border-white/10 max-h-[85vh] overflow-y-auto">
           <div className="px-4 py-3 space-y-1">
-            <p className="text-white/50 text-xs font-semibold uppercase px-3 pt-1">
-              Water bowls
-            </p>
-            {waterLinks.map((link) => {
+            {topLinks.map((link) => {
               const active = pathActive(location.pathname, link.to);
               return (
                 <Link
@@ -156,26 +129,6 @@ export default function Navbar() {
                   className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     active
                       ? 'bg-white/20 text-white'
-                      : 'text-white/80 hover:bg-white/10 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-            <p className="text-white/50 text-xs font-semibold uppercase px-3 pt-3">
-              L.A.A.P
-            </p>
-            {laapLinks.map((link) => {
-              const active = pathActive(location.pathname, link.to);
-              return (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMobileOpen(false)}
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    active
-                      ? 'bg-orange-400/25 text-white'
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 >

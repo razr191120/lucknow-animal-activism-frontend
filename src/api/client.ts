@@ -1,6 +1,9 @@
 import axios from 'axios';
 import type {
+  AdoptionApplication,
   Attachment,
+  DonationRecord,
+  DonationStats,
   Drive,
   Distribution,
   GeocodedAddress,
@@ -8,11 +11,15 @@ import type {
   LaapAdoption,
   LaapDonation,
   LaapRescue,
+  LeaderboardEntry,
   OptimizedRoute,
+  RescueAssignment,
   RoutePoint,
   Stats,
   TokenResponse,
   User,
+  Volunteer,
+  VolunteerActivity,
 } from './types';
 
 const api = axios.create({
@@ -294,5 +301,175 @@ export async function createLaapDonation(
   const { data } = await api.post('/api/v1/laap/donations', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
+  return data;
+}
+
+export async function updateLaapRescue(
+  id: string,
+  updates: Record<string, unknown>,
+): Promise<LaapRescue> {
+  const { data } = await api.patch(`/api/v1/laap/rescues/${id}`, updates);
+  return data;
+}
+
+export async function updateLaapAdoption(
+  id: string,
+  updates: Record<string, unknown>,
+): Promise<LaapAdoption> {
+  const { data } = await api.patch(`/api/v1/laap/adoptions/${id}`, updates);
+  return data;
+}
+
+// ── Adoption Applications ────────────────────────────────────
+
+export async function applyToAdopt(
+  adoptionId: string,
+  body: {
+    applicant_name: string;
+    applicant_phone?: string;
+    applicant_address?: string;
+    why_adopt?: string;
+    has_experience?: boolean;
+    living_situation?: string;
+  },
+): Promise<AdoptionApplication> {
+  const { data } = await api.post(`/api/v1/laap/adoptions/${adoptionId}/apply`, body);
+  return data;
+}
+
+export async function listAdoptionApplications(
+  adoptionId: string,
+): Promise<AdoptionApplication[]> {
+  const { data } = await api.get(`/api/v1/laap/adoptions/${adoptionId}/applications`);
+  return data;
+}
+
+export async function getMyApplications(): Promise<AdoptionApplication[]> {
+  const { data } = await api.get('/api/v1/laap/applications/mine');
+  return data;
+}
+
+export async function reviewApplication(
+  appId: string,
+  updates: { status?: string; admin_notes?: string },
+): Promise<AdoptionApplication> {
+  const { data } = await api.patch(`/api/v1/laap/applications/${appId}`, updates);
+  return data;
+}
+
+// ── Rescue Assignments ───────────────────────────────────────
+
+export async function assignVolunteerToRescue(
+  rescueId: string,
+  body: { volunteer_id: string; notes?: string },
+): Promise<RescueAssignment> {
+  const { data } = await api.post(`/api/v1/laap/rescues/${rescueId}/assign`, body);
+  return data;
+}
+
+export async function listRescueAssignments(
+  rescueId: string,
+): Promise<RescueAssignment[]> {
+  const { data } = await api.get(`/api/v1/laap/rescues/${rescueId}/assignments`);
+  return data;
+}
+
+export async function updateAssignment(
+  assignmentId: string,
+  updates: { status?: string; notes?: string },
+): Promise<RescueAssignment> {
+  const { data } = await api.patch(`/api/v1/laap/assignments/${assignmentId}`, updates);
+  return data;
+}
+
+export async function addRescueFollowUpPhotos(
+  rescueId: string,
+  formData: FormData,
+): Promise<{ photo_urls: string[] }> {
+  const { data } = await api.post(`/api/v1/laap/rescues/${rescueId}/follow-up-photos`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data;
+}
+
+// ── Volunteers ───────────────────────────────────────────────
+
+export async function volunteerSignup(body: {
+  phone?: string;
+  skills?: string;
+  availability?: string;
+  area?: string;
+}): Promise<Volunteer> {
+  const { data } = await api.post('/api/v1/volunteers/signup', body);
+  return data;
+}
+
+export async function getVolunteerProfile(): Promise<Volunteer> {
+  const { data } = await api.get('/api/v1/volunteers/me');
+  return data;
+}
+
+export async function updateVolunteerProfile(
+  updates: Record<string, unknown>,
+): Promise<Volunteer> {
+  const { data } = await api.patch('/api/v1/volunteers/me', updates);
+  return data;
+}
+
+export async function listVolunteers(): Promise<Volunteer[]> {
+  const { data } = await api.get('/api/v1/volunteers/');
+  return data;
+}
+
+export async function logVolunteerActivity(body: {
+  activity_type: string;
+  entity_id?: string;
+  description?: string;
+  hours: number;
+  date: string;
+}): Promise<VolunteerActivity> {
+  const { data } = await api.post('/api/v1/volunteers/activity', body);
+  return data;
+}
+
+export async function getMyActivities(): Promise<VolunteerActivity[]> {
+  const { data } = await api.get('/api/v1/volunteers/activity');
+  return data;
+}
+
+export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
+  const { data } = await api.get('/api/v1/volunteers/leaderboard');
+  return data;
+}
+
+// ── Donation Records ─────────────────────────────────────────
+
+export async function recordDonation(body: {
+  donor_name: string;
+  donor_email?: string;
+  donor_phone?: string;
+  amount_inr: number;
+  purpose?: string;
+  payment_mode?: string;
+  campaign_id?: string;
+  date: string;
+  notes?: string;
+}): Promise<DonationRecord> {
+  const { data } = await api.post('/api/v1/donations/', body);
+  return data;
+}
+
+export async function listDonationRecords(): Promise<DonationRecord[]> {
+  const { data } = await api.get('/api/v1/donations/');
+  return data;
+}
+
+export async function getDonationStats(): Promise<DonationStats> {
+  const { data } = await api.get('/api/v1/donations/stats');
+  return data;
+}
+
+export async function getDonationRecord(id: string): Promise<DonationRecord> {
+  const { data } = await api.get(`/api/v1/donations/${id}`);
   return data;
 }

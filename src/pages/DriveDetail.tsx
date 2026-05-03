@@ -60,7 +60,7 @@ export default function DriveDetail() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link
-        to="/drives"
+        to="/water-bowl"
         className="text-water-600 hover:text-water-800 text-sm font-medium mb-6 inline-flex items-center gap-1"
       >
         ← Back to Drives
@@ -155,7 +155,7 @@ export default function DriveDetail() {
 
       <div className="text-center py-12">
         <Link
-          to="/distribute"
+          to="/water-bowl/distribute"
           className="inline-flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-water-600 to-leaf-500 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
         >
           📸 Record a Distribution for this Drive

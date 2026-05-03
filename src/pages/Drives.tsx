@@ -141,7 +141,7 @@ export default function Drives() {
           {drives.map((drive) => (
             <Link
               key={drive.id}
-              to={`/drives/${drive.id}`}
+              to={`/water-bowl/drives/${drive.id}`}
               className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg hover:border-water-300 transition-all duration-200 overflow-hidden"
             >
               <div className="bg-gradient-to-r from-water-500 to-leaf-500 h-2" />

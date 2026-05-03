@@ -2,24 +2,39 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Admin from './pages/Admin';
+import LoadingSpinner from './components/LoadingSpinner';
+
+// Water Bowl
 import Drives from './pages/Drives';
 import DriveDetail from './pages/DriveDetail';
 import NewDistribution from './pages/NewDistribution';
 import RoutePlanner from './pages/RoutePlanner';
 import Gallery from './pages/Gallery';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Admin from './pages/Admin';
-import LoadingSpinner from './components/LoadingSpinner';
-import AdoptionList from './pages/laap/AdoptionList';
-import AdoptionNew from './pages/laap/AdoptionNew';
-import AdoptionDetail from './pages/laap/AdoptionDetail';
-import RescueList from './pages/laap/RescueList';
-import RescueNew from './pages/laap/RescueNew';
-import RescueDetail from './pages/laap/RescueDetail';
-import DonationList from './pages/laap/DonationList';
-import DonationNew from './pages/laap/DonationNew';
-import DonationDetail from './pages/laap/DonationDetail';
+
+// Rescue
+import RescueList from './pages/rescue/RescueList';
+import ReportRescue from './pages/rescue/ReportRescue';
+import RescueDetail from './pages/rescue/RescueDetail';
+
+// Adopt
+import AdoptList from './pages/adopt/AdoptList';
+import PostAdoption from './pages/adopt/PostAdoption';
+import AdoptDetail from './pages/adopt/AdoptDetail';
+import MyApplications from './pages/adopt/MyApplications';
+
+// Donate
+import DonateForm from './pages/donate/DonateForm';
+import DonationHistory from './pages/donate/DonationHistory';
+import Campaigns from './pages/donate/Campaigns';
+
+// Volunteer
+import VolunteerSignup from './pages/volunteer/VolunteerSignup';
+import MyAssignments from './pages/volunteer/MyAssignments';
+import ActivityLog from './pages/volunteer/ActivityLog';
+import Leaderboard from './pages/volunteer/Leaderboard';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -44,21 +59,36 @@ export default function App() {
           <Route path="/signup" element={<GuestRoute><Signup /></GuestRoute>} />
           <Route element={<ProtectedRoute><Layout /></ProtectedRoute>}>
             <Route path="/" element={<Dashboard />} />
-            <Route path="/drives" element={<Drives />} />
-            <Route path="/drives/:id" element={<DriveDetail />} />
-            <Route path="/distribute" element={<NewDistribution />} />
-            <Route path="/plan" element={<RoutePlanner />} />
-            <Route path="/gallery" element={<Gallery />} />
             <Route path="/admin" element={<Admin />} />
-            <Route path="/laap/adoptions" element={<AdoptionList />} />
-            <Route path="/laap/adoptions/new" element={<AdoptionNew />} />
-            <Route path="/laap/adoptions/:id" element={<AdoptionDetail />} />
-            <Route path="/laap/rescues" element={<RescueList />} />
-            <Route path="/laap/rescues/new" element={<RescueNew />} />
-            <Route path="/laap/rescues/:id" element={<RescueDetail />} />
-            <Route path="/laap/donations" element={<DonationList />} />
-            <Route path="/laap/donations/new" element={<DonationNew />} />
-            <Route path="/laap/donations/:id" element={<DonationDetail />} />
+
+            {/* Water Bowl */}
+            <Route path="/water-bowl" element={<Drives />} />
+            <Route path="/water-bowl/drives/:id" element={<DriveDetail />} />
+            <Route path="/water-bowl/distribute" element={<NewDistribution />} />
+            <Route path="/water-bowl/plan" element={<RoutePlanner />} />
+            <Route path="/water-bowl/gallery" element={<Gallery />} />
+
+            {/* Rescue */}
+            <Route path="/rescue" element={<RescueList />} />
+            <Route path="/rescue/report" element={<ReportRescue />} />
+            <Route path="/rescue/:id" element={<RescueDetail />} />
+
+            {/* Adopt */}
+            <Route path="/adopt" element={<AdoptList />} />
+            <Route path="/adopt/post" element={<PostAdoption />} />
+            <Route path="/adopt/applications" element={<MyApplications />} />
+            <Route path="/adopt/:id" element={<AdoptDetail />} />
+
+            {/* Donate */}
+            <Route path="/donate" element={<DonateForm />} />
+            <Route path="/donate/history" element={<DonationHistory />} />
+            <Route path="/donate/campaigns" element={<Campaigns />} />
+
+            {/* Volunteer */}
+            <Route path="/volunteer" element={<VolunteerSignup />} />
+            <Route path="/volunteer/assignments" element={<MyAssignments />} />
+            <Route path="/volunteer/activity" element={<ActivityLog />} />
+            <Route path="/volunteer/leaderboard" element={<Leaderboard />} />
           </Route>
         </Routes>
       </BrowserRouter>

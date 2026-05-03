@@ -71,6 +71,16 @@ export interface Stats {
   drives_completed: number;
   drives_planned: number;
   unique_addresses: number;
+  total_rescues: number;
+  open_rescues: number;
+  resolved_rescues: number;
+  total_adoptions: number;
+  open_adoptions: number;
+  fulfilled_adoptions: number;
+  total_donations_inr: number;
+  donation_count: number;
+  total_volunteers: number;
+  active_volunteers: number;
 }
 
 export interface User {
@@ -149,6 +159,97 @@ export interface LaapDonation {
   target_amount_inr: string | null;
   status: string;
   photo_urls: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// ── Volunteer ──────────────────────────────────────
+
+export interface Volunteer {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  skills: string | null;
+  availability: string | null;
+  area: string | null;
+  status: string;
+  total_hours: number;
+  badge: string;
+  joined_at: string;
+}
+
+export interface VolunteerActivity {
+  id: string;
+  volunteer_id: string;
+  activity_type: string;
+  entity_id: string | null;
+  description: string | null;
+  hours: number;
+  date: string;
+  created_at: string;
+}
+
+export interface LeaderboardEntry {
+  volunteer_id: string;
+  full_name: string;
+  total_hours: number;
+  badge: string;
+  area: string | null;
+}
+
+// ── Donation Record ────────────────────────────────
+
+export interface DonationRecord {
+  id: string;
+  donor_name: string;
+  donor_email: string | null;
+  donor_phone: string | null;
+  amount_inr: number;
+  purpose: string | null;
+  payment_mode: string;
+  receipt_number: string;
+  campaign_id: string | null;
+  recorded_by: string;
+  date: string;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface DonationStats {
+  total_amount_inr: number;
+  donation_count: number;
+}
+
+// ── Adoption Application ───────────────────────────
+
+export interface AdoptionApplication {
+  id: string;
+  adoption_id: string;
+  applicant_id: string;
+  applicant_name: string;
+  applicant_phone: string | null;
+  applicant_address: string | null;
+  why_adopt: string | null;
+  has_experience: boolean;
+  living_situation: string | null;
+  status: string;
+  admin_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+// ── Rescue Assignment ──────────────────────────────
+
+export interface RescueAssignment {
+  id: string;
+  rescue_id: string;
+  volunteer_id: string;
+  volunteer_name: string | null;
+  assigned_by: string;
+  status: string;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 }
