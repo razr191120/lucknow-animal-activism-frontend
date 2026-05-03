@@ -1,5 +1,6 @@
 import axios from 'axios';
 import type {
+  Attachment,
   Drive,
   Distribution,
   GeocodedAddress,
@@ -7,16 +8,72 @@ import type {
   OptimizedRoute,
   RoutePoint,
   Stats,
+  TokenResponse,
+  User,
 } from './types';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
 });
 
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      if (!window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(err);
+  },
+);
+
+// ── Auth ──────────────────────────────────────────
+
+export async function signup(
+  email: string,
+  full_name: string,
+  password: string,
+): Promise<TokenResponse> {
+  const { data } = await api.post('/api/v1/auth/signup', {
+    email,
+    full_name,
+    password,
+  });
+  return data;
+}
+
+export async function login(
+  email: string,
+  password: string,
+): Promise<TokenResponse> {
+  const { data } = await api.post('/api/v1/auth/login', { email, password });
+  return data;
+}
+
+export async function getMe(): Promise<User> {
+  const { data } = await api.get('/api/v1/auth/me');
+  return data;
+}
+
+// ── Stats ─────────────────────────────────────────
+
 export async function getStats(): Promise<Stats> {
   const { data } = await api.get('/api/v1/stats');
   return data;
 }
+
+// ── Drives ────────────────────────────────────────
 
 export async function getDrives(): Promise<Drive[]> {
   const { data } = await api.get('/api/v1/drives/');
@@ -47,6 +104,8 @@ export async function addAddresses(
   return data;
 }
 
+// ── Geocoding ─────────────────────────────────────
+
 export async function geocodeAddresses(
   addresses: string[],
 ): Promise<GeocodedAddress[]> {
@@ -67,6 +126,8 @@ export async function optimizeRoute(
   return data;
 }
 
+// ── Distributions ─────────────────────────────────
+
 export async function createDistribution(
   formData: FormData,
 ): Promise<Distribution> {
@@ -84,6 +145,58 @@ export async function getDistributions(): Promise<Distribution[]> {
 export async function getDistribution(id: string): Promise<Distribution> {
   const { data } = await api.get(`/api/v1/distributions/${id}`);
   return data;
+}
+
+// ── Admin ─────────────────────────────────────────
+
+export async function adminGetUsers(): Promise<User[]> {
+  const { data } = await api.get('/api/v1/admin/users');
+  return data;
+}
+
+export async function adminCreateUser(user: {
+  email: string;
+  full_name: string;
+  password: string;
+}): Promise<User> {
+  const { data } = await api.post('/api/v1/admin/users', user);
+  return data;
+}
+
+export async function adminUpdateUser(
+  userId: string,
+  updates: { full_name?: string; email?: string; role?: string; is_active?: boolean },
+): Promise<User> {
+  const { data } = await api.patch(`/api/v1/admin/users/${userId}`, updates);
+  return data;
+}
+
+export async function adminResetPassword(
+  userId: string,
+  new_password: string,
+): Promise<void> {
+  await api.patch(`/api/v1/admin/users/${userId}/password`, { new_password });
+}
+
+export async function adminDeleteUser(userId: string): Promise<void> {
+  await api.delete(`/api/v1/admin/users/${userId}`);
+}
+
+export async function adminDeleteDrive(driveId: string): Promise<void> {
+  await api.delete(`/api/v1/admin/drives/${driveId}`);
+}
+
+export async function adminDeleteDistribution(distId: string): Promise<void> {
+  await api.delete(`/api/v1/admin/distributions/${distId}`);
+}
+
+export async function adminGetAttachments(): Promise<Attachment[]> {
+  const { data } = await api.get('/api/v1/attachments/');
+  return data;
+}
+
+export async function adminDeleteAttachment(attachmentId: string): Promise<void> {
+  await api.delete(`/api/v1/admin/attachments/${attachmentId}`);
 }
 
 export async function healthCheck(): Promise<{ status: string }> {

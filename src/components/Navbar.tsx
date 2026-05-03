@@ -1,17 +1,26 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-
-const navLinks = [
-  { to: '/', label: 'Dashboard' },
-  { to: '/drives', label: 'Drives' },
-  { to: '/distribute', label: 'New Distribution' },
-  { to: '/plan', label: 'Route Planner' },
-  { to: '/gallery', label: 'Gallery' },
-];
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, isAdmin, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const navLinks = [
+    { to: '/', label: 'Dashboard' },
+    { to: '/drives', label: 'Drives' },
+    { to: '/distribute', label: 'New Distribution' },
+    { to: '/plan', label: 'Route Planner' },
+    { to: '/gallery', label: 'Gallery' },
+    ...(isAdmin ? [{ to: '/admin', label: 'Admin' }] : []),
+  ];
+
+  function handleLogout() {
+    logout();
+    navigate('/login');
+  }
 
   return (
     <nav className="bg-gradient-to-r from-water-700 via-water-600 to-leaf-600 shadow-lg sticky top-0 z-50">
@@ -29,7 +38,6 @@ export default function Navbar() {
             </span>
           </Link>
 
-          {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const active = location.pathname === link.to;
@@ -47,9 +55,22 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {user && (
+              <div className="flex items-center gap-3 ml-4 pl-4 border-l border-white/20">
+                <span className="text-white/70 text-sm hidden lg:inline">
+                  {user.full_name}
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 bg-white/10 text-white/90 text-sm rounded-lg hover:bg-white/20 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Mobile hamburger */}
           <button
             className="md:hidden text-white p-2"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -81,7 +102,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileOpen && (
         <div className="md:hidden bg-water-800/95 backdrop-blur-sm border-t border-white/10">
           <div className="px-4 py-3 space-y-1">
@@ -102,6 +122,19 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            {user && (
+              <div className="pt-2 mt-2 border-t border-white/10">
+                <p className="text-white/60 text-sm px-3 py-1">
+                  {user.full_name} ({user.role})
+                </p>
+                <button
+                  onClick={() => { setMobileOpen(false); handleLogout(); }}
+                  className="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white/80 hover:bg-white/10"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

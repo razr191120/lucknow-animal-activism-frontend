@@ -72,3 +72,33 @@ export interface Stats {
   drives_planned: number;
   unique_addresses: number;
 }
+
+export interface User {
+  id: string;
+  email: string;
+  full_name: string;
+  role: 'member' | 'admin';
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  user: User;
+}
+
+export interface Attachment {
+  id: string;
+  blob_name: string;
+  blob_url: string;
+  original_filename: string | null;
+  content_type: string | null;
+  size_bytes: number | null;
+  entity_type: string;
+  entity_id: string | null;
+  field_name: string | null;
+  uploaded_by: string | null;
+  created_at: string;
+}
