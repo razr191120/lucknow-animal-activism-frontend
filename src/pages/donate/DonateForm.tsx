@@ -1,11 +1,9 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { recordDonation, listLaapDonations } from '../../api/client';
 import type { LaapDonation } from '../../api/types';
-import { useEffect } from 'react';
 
 export default function DonateForm() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
